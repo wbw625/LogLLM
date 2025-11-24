@@ -5,9 +5,14 @@ from collections import defaultdict
 import pandas as pd
 from tqdm import tqdm
 
-from prepareData.helper import structure_log
+# from prepareData.helper import structure_log
 
-data_dir = r'/mnt/public/gw/SyslogData/HDFS_v1'
+try:
+    from prepareData.helper import structure_log  # when run as module: python -m prepareData.session_window
+except ModuleNotFoundError:
+    from helper import structure_log  # when run as script: python prepareData/session_window.py
+
+data_dir = r'/data/fangly/shqxBS/data/HDFS_v1'
 log_name = "HDFS.log"
 
 output_dir = data_dir

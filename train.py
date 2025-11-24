@@ -1,3 +1,5 @@
+# train.py
+
 import os
 from pathlib import Path
 import numpy as np
@@ -14,7 +16,7 @@ n_epochs_1 = 1
 n_epochs_2_1 = 1
 n_epochs_2_2 = 1
 n_epochs_3 = 2
-dataset_name = 'Liberty'  # 'Thunderbird' 'HDFS_v1' 'BGL'   'Liberty'
+dataset_name = 'BGL'  # 'Thunderbird' 'HDFS_v1' 'BGL'   'Liberty'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
@@ -27,17 +29,18 @@ lr_3 = 5e-5
 max_content_len = 100
 max_seq_len = 128
 
-data_path = r'/mnt/public/gw/SyslogData/{}/train.csv'.format(dataset_name)
+data_path = r'/data/fangly/shqxBS/w/data/{}/train.csv'.format(dataset_name)
 
 min_less_portion = 0.3
 
-Bert_path = r"/mnt/public/gw/LLM_model/bert-base-uncased"
-Llama_path = r"/mnt/public/gw/LLM_model/Meta-Llama-3-8B"
+Bert_path = r"/data/fangly/shqxBS/w/models/bert-base-uncased"
+Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
+Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
-ft_path = os.path.join(ROOT_DIR, r"ft_model_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_{}".format(dataset_name))
 
-device = torch.device("cuda:0")
+device = torch.device("cuda:5")
 
 print(f'n_epochs_1: {n_epochs_1}\n'
 f'n_epochs_2_1: {n_epochs_2_1}\n'
@@ -76,8 +79,8 @@ def trainModel(model, dataloader, gradient_accumulation_steps, n_epochs, lr):
     optimizer = torch.optim.AdamW(trainable_model_params, lr=lr)
     scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
 
-    normal_tokens = model.Llama_tokenizer('The sequence is normal.')['input_ids']
-    anomalous_tokens = model.Llama_tokenizer('The sequence is anomalous.')['input_ids']
+    normal_tokens = model.Llama_tokenizer('The sequence is normal.', add_special_tokens=False)['input_ids']
+    anomalous_tokens = model.Llama_tokenizer('The sequence is anomalous.', add_special_tokens=False)['input_ids']
     special_normal_tokens = set(normal_tokens) - set(anomalous_tokens)
     special_anomalous_tokens = set(anomalous_tokens) - set(normal_tokens)
 
@@ -149,7 +152,9 @@ if __name__ == '__main__':
     print(f'dataset: {data_path}')
     dataset = CustomDataset(data_path, drop_duplicates=False)
 
-    model = LogLLM(Bert_path, Llama_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
+    # model = LogLLM(Bert_path, Llama_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
+    model = LogLLM(Bert_path, Qwen_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
+
     # model = LogLLM(Bert_path, Llama_path, ft_path= ft_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
 
     tokenizer = model.Bert_tokenizer

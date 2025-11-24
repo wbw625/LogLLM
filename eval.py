@@ -1,3 +1,5 @@
+# eval.py
+
 import os
 import re
 from pathlib import Path
@@ -12,16 +14,19 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 max_content_len = 100
 max_seq_len = 128
 batch_size = 32
-dataset_name = 'Liberty'   # 'Thunderbird' 'HDFS_v1'  'BGL'  'Liberty‘
-data_path = r'/mnt/public/gw/SyslogData/{}/test.csv'.format(dataset_name)
 
-Bert_path = r"/mnt/public/gw/LLM_model/bert-base-uncased"
-Llama_path = r"/mnt/public/gw/LLM_model/Meta-Llama-3-8B"
+dataset_name = 'BGL'   # 'Thunderbird' 'HDFS_v1'  'BGL'  'Liberty'
+data_path = r'/data/fangly/shqxBS/w/data/{}/test.csv'.format(dataset_name)
+
+Bert_path = r"/data/fangly/shqxBS/w/models/bert-base-uncased"
+Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
+Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
-ft_path = os.path.join(ROOT_DIR, r"ft_model_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_new_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_{}".format(dataset_name))
 
-device = torch.device("cuda:0")
+device = torch.device("cuda:3")
 
 print(
 f'dataset_name: {dataset_name}\n'
@@ -85,7 +90,9 @@ def evalModel(model, dataloader):
 if __name__ == '__main__':
     print(f'dataset: {data_path}')
     dataset = CustomDataset(data_path)
-    model = LogLLM(Bert_path, Llama_path, ft_path=ft_path, is_train_mode=False, device=device,
+    # model = LogLLM(Bert_path, Llama_path, ft_path=ft_path, is_train_mode=False, device=device,
+    #                max_content_len=max_content_len, max_seq_len=max_seq_len)
+    model = LogLLM(Bert_path, Qwen_path, ft_path=ft_path, is_train_mode=False, device=device,
                    max_content_len=max_content_len, max_seq_len=max_seq_len)
 
     tokenizer = model.Bert_tokenizer

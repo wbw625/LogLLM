@@ -1,5 +1,6 @@
-import os.path
+# model.py
 
+import os.path
 import peft
 import torch
 from transformers import BertTokenizerFast, BertModel, BitsAndBytesConfig, AutoTokenizer, AutoModelForCausalLM, DynamicCache
@@ -89,8 +90,15 @@ class LogLLM(nn.Module):
         self.max_content_len = max_content_len  # max length of each log messages (contents)
         self.max_seq_len = max_seq_len   # max length of each log sequence  (log sequence contains some log messages)
         self.device = device
-        self.Llama_tokenizer = AutoTokenizer.from_pretrained(Llama_path, padding_side="right")
+
+
+        # self.Llama_tokenizer = AutoTokenizer.from_pretrained(Llama_path, padding_side="right")
+
+        self.Llama_tokenizer = AutoTokenizer.from_pretrained(Llama_path, padding_side="left", use_fast=True, trust_remote_code=True)
+        
+        
         self.Llama_tokenizer.pad_token = self.Llama_tokenizer.eos_token
+
         self.Llama_model = AutoModelForCausalLM.from_pretrained(Llama_path, quantization_config=bnb_config,
                                                            low_cpu_mem_usage=True,
                                                            device_map=device)  # embedding dim = 4096
@@ -99,12 +107,22 @@ class LogLLM(nn.Module):
         self.Bert_model = BertModel.from_pretrained(Bert_path, quantization_config=bnb_config, low_cpu_mem_usage=True,
                                                device_map=device)
 
-        self.projector = nn.Linear(self.Bert_model.config.hidden_size, self.Llama_model.config.hidden_size, device=device)
+        
+        # self.projector = nn.Linear(self.Bert_model.config.hidden_size, self.Llama_model.config.hidden_size, device=device)
         # self.projector = nn.Linear(self.Bert_model.config.hidden_size, self.Llama_model.config.hidden_size).half().to(device)
+
+        # 替换 projector 定义 for Qwen3-Coder-30B-A3B-Instruct
+        self.projector = nn.Sequential(
+            nn.Linear(self.Bert_model.config.hidden_size, self.Llama_model.config.hidden_size, device=device),
+            nn.GELU(),
+            nn.LayerNorm(self.Llama_model.config.hidden_size, device=device),
+            nn.Linear(self.Llama_model.config.hidden_size, self.Llama_model.config.hidden_size, device=device)
+        )
+
 
         self.instruc_tokens = self.Llama_tokenizer(
             ['Below is a sequence of system log messages:', '. Is this sequence normal or anomalous? \\n'],
-            return_tensors="pt", padding=True).to(self.device)
+            return_tensors="pt", padding=True, add_special_tokens=False).to(self.device)
 
         # if is_train_mode:
         #     self.Bert_model = prepare_model_for_kbit_training(self.Bert_model)
@@ -136,14 +154,30 @@ class LogLLM(nn.Module):
                                           lora_dropout=0.01)
             self.Bert_model = get_peft_model(self.Bert_model, Bert_peft_config)
 
+
+            # Llama_peft_config = LoraConfig(
+            #     r=8,
+            #     lora_alpha=16,
+            #     lora_dropout=0.1,
+            #     target_modules=["q_proj", "v_proj"],
+            #     bias="none",
+            #     task_type=TaskType.CAUSAL_LM
+            # )
+
+            # 调参数 for Qwen3-Coder-30B-A3B-Instruct
             Llama_peft_config = LoraConfig(
-                r=8,
-                lora_alpha=16,
-                lora_dropout=0.1,
-                target_modules=["q_proj", "v_proj"],
+                r=16,
+                lora_alpha=32,
+                lora_dropout=0.05,
+                target_modules=[
+                    "q_proj","k_proj","v_proj","o_proj",
+                    "gate_proj","up_proj","down_proj"
+                ],
                 bias="none",
                 task_type=TaskType.CAUSAL_LM
             )
+
+
             self.Llama_model = get_peft_model(self.Llama_model, Llama_peft_config)
 
     def save_ft_model(self, path):
@@ -215,15 +249,41 @@ class LogLLM(nn.Module):
         prefix = "The sequence is "
         max_len = max(len(s) for s in labels) + len(prefix)
         labels = np.char.add(np.char.add(prefix, labels.astype(f'U{max_len}')), ".")
-        answer_tokens = self.Llama_tokenizer(list(labels), padding=True, return_tensors="pt").to(self.device)
 
-        target_tokens_ids = torch.cat([answer_tokens['input_ids'][:, 1:],
-                                       torch.full((batch_size, 1), self.Llama_tokenizer.eos_token_id, device=self.device)],
-                                      dim=-1)  # add eos token
-        target_tokens_atts = answer_tokens['attention_mask'].bool()
 
-        answer_tokens_ids = answer_tokens['input_ids'][:, 1:]  # remove bos token
-        answer_tokens_atts = answer_tokens['attention_mask'].bool()[:, 1:]
+        # answer_tokens = self.Llama_tokenizer(list(labels), padding=True, return_tensors="pt").to(self.device)
+        # target_tokens_ids = torch.cat([answer_tokens['input_ids'][:, 1:],
+        #                                torch.full((batch_size, 1), self.Llama_tokenizer.eos_token_id, device=self.device)],
+        #                               dim=-1)  # add eos token
+        # target_tokens_atts = answer_tokens['attention_mask'].bool()
+
+        # answer_tokens_ids = answer_tokens['input_ids'][:, 1:]  # remove bos token
+        # answer_tokens_atts = answer_tokens['attention_mask'].bool()[:, 1:]
+
+        # for Qwen3-Coder-30B-A3B-Instruct
+        answer_tokens = self.Llama_tokenizer(
+            list(labels),
+            padding=True,
+            add_special_tokens=False,
+            return_tensors="pt"
+        ).to(self.device)
+
+        target_tokens_ids = torch.cat(
+            [answer_tokens["input_ids"],
+            torch.full((answer_tokens["input_ids"].size(0), 1),
+                        self.Llama_tokenizer.eos_token_id, device=self.device)],
+            dim=-1
+        )
+        target_tokens_atts = torch.cat(
+            [answer_tokens["attention_mask"],
+            torch.ones((answer_tokens["attention_mask"].size(0), 1),
+                        dtype=answer_tokens["attention_mask"].dtype, device=self.device)],
+            dim=-1
+        ).bool()
+
+        answer_tokens_ids = answer_tokens["input_ids"]
+        answer_tokens_atts = answer_tokens["attention_mask"].bool()
+
 
         if type(self.Llama_model) == peft.peft_model.PeftModelForCausalLM:
             instruc_embeddings = self.Llama_model.model.model.embed_tokens(self.instruc_tokens['input_ids'])
@@ -270,8 +330,16 @@ class LogLLM(nn.Module):
         seq_embeddings = torch.tensor_split(outputs, seq_positions)
 
         prefix = "The sequence is"
-        answer_prefix_tokens = self.Llama_tokenizer(prefix, padding=True, return_tensors="pt")['input_ids'][0,1:].to(
-            self.device)
+
+
+        # answer_prefix_tokens = self.Llama_tokenizer(prefix, padding=True, return_tensors="pt")['input_ids'][0,1:].to(
+        #     self.device)
+        
+        # for Qwen3-Coder-30B-A3B-Instruct
+        answer_prefix_tokens = self.Llama_tokenizer(
+            prefix, add_special_tokens=False, return_tensors="pt"
+        )["input_ids"][0].to(self.device)
+
 
         if type(self.Llama_model) == peft.peft_model.PeftModelForCausalLM:
             instruc_embeddings = self.Llama_model.model.model.embed_tokens(self.instruc_tokens['input_ids'])
