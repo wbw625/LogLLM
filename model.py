@@ -120,8 +120,39 @@ class LogLLM(nn.Module):
         )
 
 
+        # pre_prompt = 'Below is a sequence of system log messages:'
+        # post_prompt = '. Is this sequence normal or anomalous? \n'
+
+        pre_prompt = """Below is a sequence of ICS communication log entries from the IEC 60870-5-104 protocol:
+{
+    "fields": [
+        "TimeStamp",
+        "Relative Time",
+        "srcIP",
+        "dstIP",
+        "srcPort",
+        "dstPort",
+        "ipLen",
+        "len",
+        "fmt",
+        "uType",
+        "asduType",
+        "numix",
+        "cot",
+        "oa",
+        "addr",
+        "ioa"
+    ],
+    "data": [
+"""
+
+        post_prompt = """    ]
+}
+Is this sequence normal or anomalous? \n"
+"""
+
         self.instruc_tokens = self.Llama_tokenizer(
-            ['Below is a sequence of system log messages:', '. Is this sequence normal or anomalous? \\n'],
+            [pre_prompt, post_prompt],
             return_tensors="pt", padding=True, add_special_tokens=False).to(self.device)
 
         # if is_train_mode:
@@ -363,6 +394,23 @@ class LogLLM(nn.Module):
 
         pad_token_id = self.Llama_tokenizer.pad_token_id
         eos_token_id = self.Llama_tokenizer.eos_token_id
+
+
+
+        # generated_ids = self.Llama_model.generate(
+        #     inputs_embeds=inputs_embeds,
+        #     attention_mask=attention_mask,
+        #     max_new_tokens=6,         # 原来你最多生成 6 个
+        #     do_sample=False,          # 保持 greedy
+        #     eos_token_id=eos_token_id,
+        #     pad_token_id=pad_token_id,
+        # )
+
+        # # 只保留新生成的部分（最后 6 个 token）
+        # return generated_ids[:, -6:]
+
+
+
         if isinstance(eos_token_id, int):
             eos_token_id = [eos_token_id]
         eos_token_id_tensor = torch.tensor(eos_token_id).to(self.device) if eos_token_id is not None else None

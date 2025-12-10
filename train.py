@@ -16,7 +16,7 @@ n_epochs_1 = 1
 n_epochs_2_1 = 1
 n_epochs_2_2 = 1
 n_epochs_3 = 2
-dataset_name = 'BGL'  # 'Thunderbird' 'HDFS_v1' 'BGL'   'Liberty'
+dataset_name = 'ICS_json'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
@@ -38,9 +38,9 @@ Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
 Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_json_{}".format(dataset_name))
 
-device = torch.device("cuda:5")
+device = torch.device("cuda:2")
 
 print(f'n_epochs_1: {n_epochs_1}\n'
 f'n_epochs_2_1: {n_epochs_2_1}\n'
