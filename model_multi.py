@@ -1,4 +1,4 @@
-# model.py
+# model_multi.py
 
 import os.path
 import peft
@@ -146,10 +146,27 @@ class LogLLM(nn.Module):
     "data": [
 """
 
+#         post_prompt = """    ]
+# }
+# Is this sequence normal or anomalous? \n
+# """
+
         post_prompt = """    ]
 }
-Is this sequence normal or anomalous? \n
+
+Is this sequence normal, replay_attack, man_in_the_middle_attack, denial_of_service_attack, industrial_network_scanning_attack, or unauthorized_command_injection_or_rogue_control_attack?
+
+Choose one answer:
+- normal.
+- replay_attack.
+- man_in_the_middle_attack.
+- denial_of_service_attack.
+- industrial_network_scanning_attack.
+- unauthorized_command_injection_or_rogue_control_attack.
+
 """
+
+
 
         self.instruc_tokens = self.Llama_tokenizer(
             [pre_prompt, post_prompt],
@@ -338,7 +355,13 @@ Is this sequence normal or anomalous? \n
         attention_mask = attention_mask.to(self.device)
         label_mask = attention_mask.clone()
         for i in range(label_mask.shape[0]):
+
+
             label_mask[i, :-target_lens[i]-1] = 0
+
+            # label_mask[i, :-target_lens[i]] = 0
+
+
         label_mask = label_mask.bool()
 
         Llama_output = self.Llama_model(inputs_embeds=inputs_embeds, attention_mask=attention_mask).logits
@@ -400,7 +423,7 @@ Is this sequence normal or anomalous? \n
         # generated_ids = self.Llama_model.generate(
         #     inputs_embeds=inputs_embeds,
         #     attention_mask=attention_mask,
-        #     max_new_tokens=6,         # 原来你最多生成 6 个
+        #     max_new_tokens=16,         # 原来你最多生成 16 个
         #     do_sample=False,          # 保持 greedy
         #     eos_token_id=eos_token_id,
         #     pad_token_id=pad_token_id,
@@ -468,7 +491,7 @@ Is this sequence normal or anomalous? \n
                     this_peer_finished = True
 
             # stop if we exceed the maximum answer length
-            if  5 < len(answer):
+            if  32 < len(answer):
                 this_peer_finished = True
 
         return torch.stack(answer,dim=1)

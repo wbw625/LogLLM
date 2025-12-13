@@ -1,4 +1,4 @@
-# train.py
+# train_multi.py
 
 import os
 from pathlib import Path
@@ -6,9 +6,9 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from torch import nn
-from model import LogLLM
+from model_multi import LogLLM
 from torch.utils.data import DataLoader
-from customDataset import CustomDataset, CustomCollator, BalancedSampler
+from customDataset_multi import CustomDataset, CustomCollator, BalancedSampler
 from torch import optim
 
 
@@ -16,7 +16,7 @@ n_epochs_1 = 1
 n_epochs_2_1 = 1
 n_epochs_2_2 = 1
 n_epochs_3 = 2
-dataset_name = 'ICS_json'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'ICS_multi'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
@@ -38,9 +38,9 @@ Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
 Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_json_new_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_multi_{}".format(dataset_name))
 
-device = torch.device("cuda:4")
+device = torch.device("cuda:2")
 
 print(f'n_epochs_1: {n_epochs_1}\n'
 f'n_epochs_2_1: {n_epochs_2_1}\n'
@@ -79,10 +79,30 @@ def trainModel(model, dataloader, gradient_accumulation_steps, n_epochs, lr):
     optimizer = torch.optim.AdamW(trainable_model_params, lr=lr)
     scheduler = optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.7)
 
-    normal_tokens = model.Llama_tokenizer('The sequence is normal.', add_special_tokens=False)['input_ids']
-    anomalous_tokens = model.Llama_tokenizer('The sequence is anomalous.', add_special_tokens=False)['input_ids']
-    special_normal_tokens = set(normal_tokens) - set(anomalous_tokens)
-    special_anomalous_tokens = set(anomalous_tokens) - set(normal_tokens)
+
+
+    # normal_tokens = model.Llama_tokenizer('The sequence is normal.', add_special_tokens=False)['input_ids']
+    # anomalous_tokens = model.Llama_tokenizer('The sequence is anomalous.', add_special_tokens=False)['input_ids']
+    # special_normal_tokens = set(normal_tokens) - set(anomalous_tokens)
+    # special_anomalous_tokens = set(anomalous_tokens) - set(normal_tokens)
+
+    CLASS_TEXTS = [
+        "The sequence is normal.",
+        "The sequence is replay_attack.",
+        "The sequence is man_in_the_middle_attack.",
+        "The sequence is denial_of_service_attack.",
+        "The sequence is industrial_network_scanning_attack.",
+        "The sequence is unauthorized_command_injection_or_rogue_control_attack."
+    ]
+
+    class_token_sets = [
+        set(model.Llama_tokenizer(t, add_special_tokens=False)["input_ids"])
+        for t in CLASS_TEXTS
+    ]
+
+    label_token_set = set().union(*class_token_sets)
+
+
 
     total_steps = n_epochs * len(dataloader)
     scheduler_step = max(int(total_steps / 10), 1)
@@ -117,9 +137,17 @@ def trainModel(model, dataloader, gradient_accumulation_steps, n_epochs, lr):
                 optimizer.step()  # 更新网络参数
                 optimizer.zero_grad()  # reset grdient # 清空过往梯度
 
-            acc_mask = torch.zeros_like(targets,device=device).bool()
-            for token in special_normal_tokens.union(special_anomalous_tokens):
+
+
+            # acc_mask = torch.zeros_like(targets,device=device).bool()
+            # for token in special_normal_tokens.union(special_anomalous_tokens):
+            #     acc_mask[targets == token] = True
+
+            acc_mask = torch.zeros_like(targets, device=device).bool()
+            for token in label_token_set:
                 acc_mask[targets == token] = True
+
+
 
             total_acc += (outputs.argmax(1)[acc_mask] == targets[acc_mask]).sum().item()
             total_acc_count += acc_mask.sum()
