@@ -121,7 +121,19 @@ class LogLLM(nn.Module):
 
 
         # pre_prompt = 'Below is a sequence of system log messages:'
+        # pre_prompt = 'Below is a sequence of IEC-104 protocol communication logs:'
         # post_prompt = '. Is this sequence normal or anomalous? \n'
+#         post_prompt = """Is this sequence normal, replay_attack, man_in_the_middle_attack, denial_of_service_attack, industrial_network_scanning_attack, or unauthorized_command_injection_or_rogue_control_attack?
+
+# Choose one answer:
+# - normal.
+# - replay_attack.
+# - man_in_the_middle_attack.
+# - denial_of_service_attack.
+# - industrial_network_scanning_attack.
+# - unauthorized_command_injection_or_rogue_control_attack.
+
+# """
 
         pre_prompt = """Below is a sequence of ICS communication log entries from the IEC 60870-5-104 protocol:
 {
@@ -145,11 +157,6 @@ class LogLLM(nn.Module):
     ],
     "data": [
 """
-
-#         post_prompt = """    ]
-# }
-# Is this sequence normal or anomalous? \n
-# """
 
         post_prompt = """    ]
 }

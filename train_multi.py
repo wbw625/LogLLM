@@ -16,13 +16,13 @@ n_epochs_1 = 1
 n_epochs_2_1 = 1
 n_epochs_2_2 = 1
 n_epochs_3 = 2
-dataset_name = 'ICS_multi'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'ICS_log_multi'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
 
 
-lr_1 = 5e-4
+lr_1 = 3e-4
 lr_2_1 = 5e-4
 lr_2_2 = 5e-5
 lr_3 = 5e-5
@@ -40,7 +40,7 @@ Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 ROOT_DIR = Path(__file__).parent
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_multi_{}".format(dataset_name))
 
-device = torch.device("cuda:2")
+device = torch.device("cuda:6")
 
 print(f'n_epochs_1: {n_epochs_1}\n'
 f'n_epochs_2_1: {n_epochs_2_1}\n'

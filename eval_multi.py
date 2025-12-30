@@ -26,7 +26,7 @@ Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
 # ft_path = os.path.join(ROOT_DIR, r"ft_model_new_{}".format(dataset_name))
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_multi_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_multi_json_{}".format(dataset_name))
 
 device = torch.device("cuda:0")
 

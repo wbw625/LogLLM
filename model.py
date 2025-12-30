@@ -121,35 +121,36 @@ class LogLLM(nn.Module):
 
 
         # pre_prompt = 'Below is a sequence of system log messages:'
-        # post_prompt = '. Is this sequence normal or anomalous? \n'
+        pre_prompt = 'Below is a sequence of IEC-104 protocol communication logs:'
+        post_prompt = '. Is this sequence normal or anomalous? \n'
 
-        pre_prompt = """Below is a sequence of ICS communication log entries from the IEC 60870-5-104 protocol:
-{
-    "fields": [
-        "TimeStamp",
-        "Relative Time",
-        "srcIP",
-        "dstIP",
-        "srcPort",
-        "dstPort",
-        "ipLen",
-        "len",
-        "fmt",
-        "uType",
-        "asduType",
-        "numix",
-        "cot",
-        "oa",
-        "addr",
-        "ioa"
-    ],
-    "data": [
-"""
+#         pre_prompt = """Below is a sequence of ICS communication log entries from the IEC 60870-5-104 protocol:
+# {
+#     "fields": [
+#         "TimeStamp",
+#         "Relative Time",
+#         "srcIP",
+#         "dstIP",
+#         "srcPort",
+#         "dstPort",
+#         "ipLen",
+#         "len",
+#         "fmt",
+#         "uType",
+#         "asduType",
+#         "numix",
+#         "cot",
+#         "oa",
+#         "addr",
+#         "ioa"
+#     ],
+#     "data": [
+# """
 
-        post_prompt = """    ]
-}
-Is this sequence normal or anomalous? \n
-"""
+#         post_prompt = """    ]
+# }
+# Is this sequence normal or anomalous? \n
+# """
 
         self.instruc_tokens = self.Llama_tokenizer(
             [pre_prompt, post_prompt],
