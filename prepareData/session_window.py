@@ -12,7 +12,7 @@ try:
 except ModuleNotFoundError:
     from helper import structure_log  # when run as script: python prepareData/session_window.py
 
-data_dir = r'/data/fangly/shqxBS/data/HDFS_v1'
+data_dir = r'/data/fangly/shqxBS/log/data/HDFS_v1'
 log_name = "HDFS.log"
 
 output_dir = data_dir
@@ -31,7 +31,7 @@ if __name__ == '__main__':
             na_filter=False, memory_map=True, dtype={'Date':object, "Time": object})
 
     print(f'number of messages in {log_structured_file} is {len(df)}')
-    # df = df[:100000]
+    # df = df[:3000000]
 
     data_dict_content = defaultdict(list) #preserve insertion order of items
     for idx, row in tqdm(df.iterrows(),total=len(df)):
@@ -54,9 +54,9 @@ if __name__ == '__main__':
 
     data_df = data_df.sample(frac=1).reset_index(drop=True)  ##shuffle
 
-    session_train_df = data_df[:train_len]
+    session_train_df = data_df[:train_len].copy()
 
-    session_test_df = data_df[train_len:]
+    session_test_df = data_df[train_len:].copy()
     session_test_df = session_test_df.reset_index(drop=True)
 
     session_train_df['session_length'] = session_train_df["Content"].apply(len)

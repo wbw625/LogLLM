@@ -16,12 +16,12 @@ max_seq_len = 128
 batch_size = 32
 
 dataset_name = 'ICS_log'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
-data_path = r'/data/fangly/shqxBS/w/data/{}/test.csv'.format(dataset_name)
-# data_path = "/data/fangly/shqxBS/w/data/ICS/test.csv"
+data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
+# data_path = "/data/fangly/shqxBS/log/data/ICS/test.csv"
 
-Bert_path = r"/data/fangly/shqxBS/w/models/bert-base-uncased"
-Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
-Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
+Bert_path = r"/data/fangly/shqxBS/models/bert-base-uncased"
+Llama_path = r"/data/fangly/shqxBS/models/Meta-Llama-3-8B"
+Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
 # ft_path = os.path.join(ROOT_DIR, r"ft_model_new_{}".format(dataset_name))

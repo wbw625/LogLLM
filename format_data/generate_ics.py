@@ -4,7 +4,7 @@ import csv
 import random
 
 BASE_DIR = "/data/fangly/shqxBS/data/ics"
-OUT_DIR = "/data/fangly/shqxBS/w/data/ICS_log"
+OUT_DIR = "/data/fangly/shqxBS/log/data/ICS_log"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 LABEL_MAP = {

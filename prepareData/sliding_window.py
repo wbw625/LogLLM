@@ -8,13 +8,13 @@ from helper import sliding_window, fixedSize_window, structure_log
 #### for Thunderbird, Liberty, BGL
 
 
-# data_dir = r'/data/fangly/shqxBS/data/liberty'
+# data_dir = r'/data/fangly/shqxBS/log/data/Liberty'
 # log_name = "liberty2"
 
-# data_dir = r'/data/fangly/shqxBS/data/BGL'
+# data_dir = r'/data/fangly/shqxBS/log/data/BGL'
 # log_name = "BGL.log"
 
-data_dir = r'/data/fangly/shqxBS/w/data/Thunderbird'
+data_dir = r'/data/fangly/shqxBS/log/data/Thunderbird'
 log_name = "Thunderbird.log"
 
 # BGL

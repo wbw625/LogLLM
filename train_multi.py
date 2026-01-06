@@ -29,13 +29,13 @@ lr_3 = 5e-5
 max_content_len = 100
 max_seq_len = 128
 
-data_path = r'/data/fangly/shqxBS/w/data/{}/train.csv'.format(dataset_name)
+data_path = r'/data/fangly/shqxBS/log/data/{}/train.csv'.format(dataset_name)
 
 min_less_portion = 0.5
 
-Bert_path = r"/data/fangly/shqxBS/w/models/bert-base-uncased"
-Llama_path = r"/data/fangly/shqxBS/w/models/Meta-Llama-3-8B"
-Qwen_path = r"/data/fangly/models/Qwen3-Coder-30B-A3B-Instruct"
+Bert_path = r"/data/fangly/shqxBS/models/bert-base-uncased"
+Llama_path = r"/data/fangly/shqxBS/models/Meta-Llama-3-8B"
+Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_multi_{}".format(dataset_name))

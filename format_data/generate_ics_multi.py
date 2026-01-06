@@ -7,7 +7,7 @@ import random
 BASE_DIR = "/data/fangly/shqxBS/data/ics"
 
 # 输出路径
-OUT_DIR = "/data/fangly/shqxBS/w/data/ICS_log_multi"
+OUT_DIR = "/data/fangly/shqxBS/log/data/ICS_log_multi"
 os.makedirs(OUT_DIR, exist_ok=True)
 
 TRAIN_RATIO = 0.9
