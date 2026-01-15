@@ -1,12 +1,12 @@
-import os.path
+# sliding_window.py
 
+import os.path
 
 import numpy as np
 import pandas as pd
 from helper import sliding_window, fixedSize_window, structure_log
 
 #### for Thunderbird, Liberty, BGL
-
 
 # data_dir = r'/data/fangly/shqxBS/log/data/Liberty'
 # log_name = "liberty2"
