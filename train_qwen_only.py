@@ -6,19 +6,19 @@ import numpy as np
 import torch
 from tqdm import tqdm
 from torch import nn
-from model import LogLLM
+from model_qwen_only import LogLLM
 from torch.utils.data import DataLoader
 from customDataset import CustomDataset, CustomCollator, BalancedSampler
 from torch import optim
 
 # 消融实验：只有单一阶段训练
-n_epochs = 3 
-dataset_name = 'ICS_log' 
+n_epochs = 3
+dataset_name = 'BGL' # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
 
-lr = 1e-4  # 使用一个通用的学习率
+lr = 1e-4  # 只有一个学习率
 
 max_content_len = 100
 max_seq_len = 128
@@ -28,14 +28,14 @@ min_less_portion = 0.5
 
 # BERT路径不再需要
 # Bert_path = r"/data/fangly/shqxBS/models/bert-base-uncased"
-Llama_path = r"/data/fangly/shqxBS/models/Meta-Llama-3-8B"
-Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
+# Llama_path = r"/data/fangly/shqxBS/models/Meta-Llama-3-8B"
+Llama_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
 # 修改保存路径名以示区别
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_ablation_nobert_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwenonly_{}".format(dataset_name))
 
-device = torch.device("cuda:7")
+device = torch.device("cuda:2")
 
 print(f'n_epochs: {n_epochs}\n'
       f'dataset_name: {dataset_name}\n'
@@ -139,7 +139,7 @@ if __name__ == '__main__':
     dataset = CustomDataset(data_path, drop_duplicates=False)
 
     # 仅使用 Qwen/Llama
-    model = LogLLM(Qwen_path, device=device, max_content_len=max_content_len, max_seq_len=max_seq_len)
+    model = LogLLM(Llama_path, device=device, max_content_len=max_content_len, max_seq_len=max_seq_len)
 
     # 关键修改：使用 Qwen 的 Tokenizer 传给 Collator
     # Collator 必须使用 Qwen Tokenizer 来对原始日志文本进行 tokenize

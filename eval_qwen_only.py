@@ -7,7 +7,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-from model import LogLLM
+from model_qwen_only import LogLLM
 from customDataset import CustomDataset, CustomCollator
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
@@ -20,10 +20,10 @@ data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
 
 # Bert_path 不再需要
 # Llama_path = r"/data/fangly/shqxBS/models/Meta-Llama-3-8B"
-Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
+Llama_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_ablation_nobert_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwenonly_{}".format(dataset_name))
 
 device = torch.device("cuda:3")
 
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     dataset = CustomDataset(data_path)
     
     # 只需要 Qwen path
-    model = LogLLM(Qwen_path, ft_path=ft_path, is_train_mode=False, device=device,
+    model = LogLLM(Llama_path, ft_path=ft_path, is_train_mode=False, device=device,
                    max_content_len=max_content_len, max_seq_len=max_seq_len)
 
     # 使用 Qwen tokenizer
