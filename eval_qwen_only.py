@@ -15,7 +15,7 @@ max_content_len = 100
 max_seq_len = 128
 batch_size = 32
 
-dataset_name = 'ICS_log'
+dataset_name = 'BGL_10'
 data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
 
 # Bert_path 不再需要

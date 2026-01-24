@@ -15,7 +15,7 @@ max_content_len = 100
 max_seq_len = 128
 batch_size = 32
 
-dataset_name = 'ICS_log'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'BGL_10'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
 # data_path = "/data/fangly/shqxBS/log/data/ICS/test.csv"
 

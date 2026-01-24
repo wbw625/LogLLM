@@ -13,7 +13,7 @@ from torch import optim
 
 # 消融实验：只有单一阶段训练
 n_epochs = 3
-dataset_name = 'BGL' # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'BGL_10' # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size

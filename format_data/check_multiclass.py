@@ -1,7 +1,7 @@
 import csv
 from collections import Counter
 
-DATASET_DIR = "/data/fangly/shqxBS/w/data/ICS_log_multi"  # 换成你的输出目录
+DATASET_DIR = "/data/fangly/shqxBS/log/data/BGL_10"  # 换成你的输出目录
 
 files = ["train.csv", "test.csv"]
 

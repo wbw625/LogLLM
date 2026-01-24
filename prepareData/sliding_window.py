@@ -11,23 +11,23 @@ from helper import sliding_window, fixedSize_window, structure_log
 # data_dir = r'/data/fangly/shqxBS/log/data/Liberty'
 # log_name = "liberty2"
 
-# data_dir = r'/data/fangly/shqxBS/log/data/BGL'
-# log_name = "BGL.log"
+data_dir = r'/data/fangly/shqxBS/log/data/BGL_10'
+log_name = "BGL.log"
 
-data_dir = r'/data/fangly/shqxBS/log/data/Thunderbird'
-log_name = "Thunderbird.log"
+# data_dir = r'/data/fangly/shqxBS/log/data/Thunderbird'
+# log_name = "Thunderbird.log"
 
 # BGL
-# start_line = 0
-# end_line = None
+start_line = 0
+end_line = None
 
 # Liberty
 # start_line = 40000000
 # end_line = 45000000
 
 # thunderbird
-start_line = 160000000
-end_line = 170000000
+# start_line = 160000000
+# end_line = 170000000
 
 
 output_dir = data_dir
@@ -36,8 +36,11 @@ output_dir = data_dir
 if __name__ == '__main__':
     # group_type = 'time_sliding'
 
-    window_size = 100
-    step_size = 100
+    # window_size = 100
+    # step_size = 100
+
+    window_size = 10
+    step_size = 20
 
     # if 'bgl' in log_name.lower():
     #     window_size = 5  # 5 minutes
