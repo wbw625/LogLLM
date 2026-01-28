@@ -11,7 +11,7 @@ from helper import sliding_window, fixedSize_window, structure_log
 # data_dir = r'/data/fangly/shqxBS/log/data/Liberty'
 # log_name = "liberty2"
 
-data_dir = r'/data/fangly/shqxBS/log/data/BGL_10'
+data_dir = r'/data/fangly/shqxBS/log/data/BGL_5'
 log_name = "BGL.log"
 
 # data_dir = r'/data/fangly/shqxBS/log/data/Thunderbird'
@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # window_size = 100
     # step_size = 100
 
-    window_size = 10
+    window_size = 5
     step_size = 20
 
     # if 'bgl' in log_name.lower():

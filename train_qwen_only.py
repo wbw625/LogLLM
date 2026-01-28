@@ -13,7 +13,7 @@ from torch import optim
 
 # 消融实验：只有单一阶段训练
 n_epochs = 3
-dataset_name = 'BGL_10' # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'BGL_5' # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
@@ -24,7 +24,7 @@ max_content_len = 100
 max_seq_len = 128
 
 data_path = r'/data/fangly/shqxBS/log/data/{}/train.csv'.format(dataset_name)
-min_less_portion = 0.5
+min_less_portion = 0.3
 
 # BERT路径不再需要
 # Bert_path = r"/data/fangly/shqxBS/models/bert-base-uncased"
@@ -35,7 +35,7 @@ ROOT_DIR = Path(__file__).parent
 # 修改保存路径名以示区别
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwenonly_{}".format(dataset_name))
 
-device = torch.device("cuda:2")
+device = torch.device("cuda:1")
 
 print(f'n_epochs: {n_epochs}\n'
       f'dataset_name: {dataset_name}\n'
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         dataset,
         batch_size=micro_batch_size,
         num_workers=4,
-        sampler=BalancedSampler(dataset, target_ratio=min_less_portion),
+        sampler=BalancedSampler(dataset, target_ratio=min_less_portion, max_samples=1000),
         collate_fn=collator,
         drop_last=True
     )
