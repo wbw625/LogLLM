@@ -35,7 +35,7 @@ ROOT_DIR = Path(__file__).parent
 # 修改保存路径名以示区别
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwenonly_{}".format(dataset_name))
 
-device = torch.device("cuda:1")
+device = torch.device("cuda:3")
 
 print(f'n_epochs: {n_epochs}\n'
       f'dataset_name: {dataset_name}\n'
@@ -150,7 +150,7 @@ if __name__ == '__main__':
         dataset,
         batch_size=micro_batch_size,
         num_workers=4,
-        sampler=BalancedSampler(dataset, target_ratio=min_less_portion, max_samples=1000),
+        sampler=BalancedSampler(dataset, target_ratio=min_less_portion, max_samples=10000),
         collate_fn=collator,
         drop_last=True
     )
