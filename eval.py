@@ -15,7 +15,7 @@ max_content_len = 100
 max_seq_len = 128
 batch_size = 32
 
-dataset_name = 'BGL_5'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'Six-Month'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
 # data_path = "/data/fangly/shqxBS/log/data/ICS/test.csv"
 
@@ -27,7 +27,7 @@ ROOT_DIR = Path(__file__).parent
 # ft_path = os.path.join(ROOT_DIR, r"ft_model_new_{}".format(dataset_name))
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_lr_{}".format(dataset_name))
 
-device = torch.device("cuda:0")
+device = torch.device("cuda:5")
 
 print(
 f'dataset_name: {dataset_name}\n'
@@ -53,7 +53,7 @@ def evalModel(model, dataloader):
             outputs_ids = model(inputs,seq_positions)
             outputs = model.Llama_tokenizer.batch_decode(outputs_ids)
 
-            # print(outputs)
+            print(outputs)
 
             for text in outputs:
                 match = re.search(r'normal|anomalous', text, re.IGNORECASE)

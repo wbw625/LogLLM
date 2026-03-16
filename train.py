@@ -16,21 +16,22 @@ n_epochs_1 = 1
 n_epochs_2_1 = 1
 n_epochs_2_2 = 1
 n_epochs_3 = 2
-dataset_name = 'HDFS_v1'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'Six-Month'  # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 batch_size = 16
 micro_batch_size = 4
 gradient_accumulation_steps = batch_size // micro_batch_size
 
 
 # lr_1 = 5e-4
-lr_1 = 1e-4
+lr_2_1 = 5e-4
+lr_2_2 = 5e-5
+lr_3 = 5e-5
 
-# lr_2_1 = 5e-4
-# lr_2_2 = 5e-5
-# lr_3 = 5e-5
-lr_2_1 = 1e-4
-lr_2_2 = 2e-5
-lr_3 = 1e-5
+lr_1 = 1e-4
+# lr_2_1 = 1e-4
+# lr_2_2 = 2e-5
+# lr_3 = 1e-5
+
 
 max_content_len = 100
 max_seq_len = 128
@@ -46,7 +47,7 @@ Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 ROOT_DIR = Path(__file__).parent
 ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_lr_{}".format(dataset_name))
 
-device = torch.device("cuda:4")
+device = torch.device("cuda:5")
 
 print(f'n_epochs_1: {n_epochs_1}\n'
 f'n_epochs_2_1: {n_epochs_2_1}\n'
@@ -158,6 +159,7 @@ if __name__ == '__main__':
     print(f'dataset: {data_path}')
     dataset = CustomDataset(data_path, drop_duplicates=False)
 
+    print("真实Dataset长度:", len(dataset))
     # model = LogLLM(Bert_path, Llama_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
     model = LogLLM(Bert_path, Qwen_path, device = device, max_content_len = max_content_len, max_seq_len = max_seq_len)
 
@@ -170,7 +172,7 @@ if __name__ == '__main__':
         dataset,
         batch_size=micro_batch_size,
         num_workers=4,
-        sampler=BalancedSampler(dataset, target_ratio=min_less_portion, max_samples=1000),
+        sampler=BalancedSampler(dataset, target_ratio=min_less_portion),
         collate_fn=collator,
         drop_last=True
     )
@@ -184,7 +186,7 @@ if __name__ == '__main__':
         dataset,
         batch_size=micro_batch_size,
         num_workers=4,
-        sampler=BalancedSampler(dataset, target_ratio=min_less_portion, max_samples=50000),
+        sampler=BalancedSampler(dataset, target_ratio=min_less_portion),
         collate_fn=collator,
         drop_last=True
     )

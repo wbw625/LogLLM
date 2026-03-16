@@ -91,7 +91,7 @@ def merge_data(data):
 
 
 class BalancedSampler(Sampler):
-    def __init__(self, dataset, target_ratio=0.3, max_samples=None, min_samples=50000):
+    def __init__(self, dataset, target_ratio=0.3, max_samples=None, min_samples=500):
         self.labels = dataset.get_label()
         self.dataset = dataset
         self.target_ratio = target_ratio
