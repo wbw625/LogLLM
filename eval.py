@@ -15,7 +15,7 @@ max_content_len = 100
 max_seq_len = 128
 batch_size = 32
 
-dataset_name = 'Six-Month'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
+dataset_name = 'Sherlock'   # 'Thunderbird' 'HDFS_v1' 'BGL' 'Liberty' 'ICS'
 data_path = r'/data/fangly/shqxBS/log/data/{}/test.csv'.format(dataset_name)
 # data_path = "/data/fangly/shqxBS/log/data/ICS/test.csv"
 
@@ -25,9 +25,9 @@ Qwen_path = r"/data/fangly/shqxBS/models/Qwen3-Coder-30B-A3B-Instruct"
 
 ROOT_DIR = Path(__file__).parent
 # ft_path = os.path.join(ROOT_DIR, r"ft_model_new_{}".format(dataset_name))
-ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_lr_{}".format(dataset_name))
+ft_path = os.path.join(ROOT_DIR, r"ft_model_qwen_new_lr_{}_01".format(dataset_name))
 
-device = torch.device("cuda:5")
+device = torch.device("cuda:6")
 
 print(
 f'dataset_name: {dataset_name}\n'
